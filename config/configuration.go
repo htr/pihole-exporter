@@ -16,6 +16,7 @@ import (
 // Config is the exporter CLI configuration.
 type Config struct {
 	PIHoleHostname string        `config:"pihole_hostname"`
+	PIHolePort     uint16        `config:"pihole_port"`
 	PIHolePassword string        `config:"pihole_password"`
 	PIHoleApiToken string        `config:"pihole_api_token"`
 	Port           string        `config:"port"`
@@ -25,6 +26,7 @@ type Config struct {
 func getDefaultConfig() *Config {
 	return &Config{
 		PIHoleHostname: "127.0.0.1",
+		PIHolePort:     80,
 		PIHolePassword: "",
 		PIHoleApiToken: "",
 		Port:           "9617",

@@ -26,14 +26,14 @@ func main() {
 
 	metrics.Init()
 
-	initPiHoleClient(conf.PIHoleHostname, conf.PIHolePassword, conf.PIHoleApiToken, conf.Interval)
+	initPiHoleClient(conf.PIHoleHostname, conf.PIHolePort, conf.PIHolePassword, conf.PIHoleApiToken, conf.Interval)
 	initHttpServer(conf.Port)
 
 	handleExitSignal()
 }
 
-func initPiHoleClient(hostname, password, apiToken string, interval time.Duration) {
-	client := pihole.NewClient(hostname, password, apiToken, interval)
+func initPiHoleClient(hostname string, port uint16, password, apiToken string, interval time.Duration) {
+	client := pihole.NewClient(hostname, port, password, apiToken, interval)
 	go client.Scrape()
 }
 

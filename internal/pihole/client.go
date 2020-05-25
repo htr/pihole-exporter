@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	loginURLPattern = "http://%s/admin/index.php?login"
-	statsURLPattern = "http://%s/admin/api.php?summaryRaw&overTimeData&topItems&recentItems&getQueryTypes&getForwardDestinations&getQuerySources&jsonForceObject"
+	loginURLPattern = "http://%s:%d/admin/index.php?login"
+	statsURLPattern = "http://%s:%d/admin/api.php?summaryRaw&overTimeData&topItems&recentItems&getQueryTypes&getForwardDestinations&getQuerySources&jsonForceObject"
 )
 
 // Client struct is a PI-Hole client to request an instance of a PI-Hole ad blocker.
@@ -24,15 +24,17 @@ type Client struct {
 	httpClient http.Client
 	interval   time.Duration
 	hostname   string
+	port       uint16
 	password   string
 	sessionID  string
 	apiToken   string
 }
 
 // NewClient method initializes a new PI-Hole client.
-func NewClient(hostname, password, apiToken string, interval time.Duration) *Client {
+func NewClient(hostname string, port uint16, password, apiToken string, interval time.Duration) *Client {
 	return &Client{
 		hostname: hostname,
+		port:     port,
 		password: password,
 		apiToken: apiToken,
 		interval: interval,
@@ -101,7 +103,7 @@ func (c *Client) setMetrics(stats *Stats) {
 }
 
 func (c *Client) getPHPSessionID() (sessionID string) {
-	loginURL := fmt.Sprintf(loginURLPattern, c.hostname)
+	loginURL := fmt.Sprintf(loginURLPattern, c.hostname, c.port)
 	values := url.Values{"pw": []string{c.password}}
 
 	req, err := http.NewRequest("POST", loginURL, strings.NewReader(values.Encode()))
@@ -130,7 +132,7 @@ func (c *Client) getPHPSessionID() (sessionID string) {
 func (c *Client) getStatistics() *Stats {
 	var stats Stats
 
-	statsURL := fmt.Sprintf(statsURLPattern, c.hostname)
+	statsURL := fmt.Sprintf(statsURLPattern, c.hostname, c.port)
 
 	if c.isUsingApiToken() {
 		statsURL = fmt.Sprintf("%s&auth=%s", statsURL, c.apiToken)
